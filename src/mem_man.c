@@ -107,7 +107,7 @@ void* allok(size_t size)
 	if(size < MIN_PAYLOAD_SIZE)
 		size = MIN_PAYLOAD_SIZE;
 
-	block_header* blockH = NULL; // find suitable block from the free tree
+	block_header* blockH = (block_header*) find_succeeding_or_equals(&free_tree, &((block_header){.payload_size = size}));
 	if(blockH == NULL)
 		blockH = get_new_block();
 
