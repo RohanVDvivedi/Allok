@@ -142,5 +142,8 @@ void freek(void* mptr)
 		merge(blockH);
 	}
 
-	insert_in_bst(&free_tree, blockH);
+	if(blockH->payload_size == MAX_PAYLOAD_SIZE && blockH->prev == NULL && blockH->next == NULL)
+		return_block_memory(blockH);
+	else
+		insert_in_bst(&free_tree, blockH);
 }
