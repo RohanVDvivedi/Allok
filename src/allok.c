@@ -49,7 +49,6 @@ void init_block(void* block, size_t total_size)
 
 block_header* get_new_block()
 {
-	printf("Getting new block\n");
 	void* block = malloc(MAX_BLOCK_SIZE);
 	init_block(block, MAX_BLOCK_SIZE);
 	return block;
@@ -68,7 +67,6 @@ int is_free_block(block_header* blockH)
 // returns the other splitted block header, if splitted
 block_header* split(block_header* big_blockH, size_t required_payload_size)
 {
-	printf("block being splitted, has payload_size %lu + block base size %lu\n", big_blockH->payload_size, sizeof(block_header));
 	if(big_blockH->payload_size < required_payload_size + MIN_BLOCK_SIZE)
 		return NULL;
 
