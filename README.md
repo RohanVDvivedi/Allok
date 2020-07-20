@@ -1,3 +1,9 @@
 # Allok
-BST based memory allocator replacement for malloc, log(n) best fit algorithm for high memory utilization and speed, but has high memory overhead than stdlib malloc.
-Use at your own risk, not recomended for production code.
+BST based generic memory allocator replacement for malloc, log(n) best fit algorithm for high memory utilization and speed, but has high memory overhead than stdlib malloc.
+
+setup instructions
+
+ * git clone https://github.com/RohanVDvivedi/Allok.git
+ * cd Allok
+ * sudo make clean install
+ * add "-lallok" linker flag, while compiling your application
