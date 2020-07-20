@@ -1,4 +1,4 @@
-#include<mem_man.h>
+#include<allok.h>
 
 #include<bst.h>
 
@@ -27,7 +27,7 @@ int block_compare(const void* data1, const void* data2)
 		return 0;
 }
 
-#define MAX_BLOCK_SIZE (4096 * 2)
+#define MAX_BLOCK_SIZE (128)//(4096 * 2)
 #define MIN_BLOCK_SIZE (sizeof(block_header) + 8)
 
 #define MAX_PAYLOAD_SIZE MAX_BLOCK_SIZE - sizeof(block_header)
