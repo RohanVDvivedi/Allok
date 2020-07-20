@@ -118,7 +118,7 @@ void* allok(size_t size)
 			insert_in_bst(&free_tree, splitted_block);
 	}
 
-	return blockH;
+	return blockH->payload;
 }
 
 void freek(void* mptr)
