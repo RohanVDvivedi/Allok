@@ -97,8 +97,8 @@ int merge(block_header* blockH)
 	blockH->payload_size = blockH->payload_size + sizeof(block_header) + blockH->next->payload_size;
 
 	blockH->next = blockH->next->next;
-	if(blockH->next->next != NULL)
-		blockH->next->next->prev = blockH;
+	if(blockH->next != NULL)
+		blockH->next->prev = blockH;
 
 	return 1;
 }
