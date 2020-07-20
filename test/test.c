@@ -1,19 +1,30 @@
-#include<mem_man.h>
+#include<allok.h>
 
 #include<stdio.h>
 #include<stdlib.h>
 
-// We use malloc/free for initialize and test our algorithm Haha irony
+#define TEST_ALLOKS 50
 
-#define MEMORY_SIZE 4 * 1024
+int test_sizes_size = 5;
+int test_sizes[] = {6, 16, 20, 35, 55};
+
+int memory_sizes[TEST_ALLOKS];
+void* memory[TEST_ALLOKS];
 
 int main()
 {
-	void* memory = malloc(MEMORY_SIZE); 
+	allok_init();
 
-	mem_man* mm = mem_man_init(memory, MEMORY_SIZE);
+	for(int i = 0; i < TEST_ALLOKS; i++)
+	{
+		memory_sizes[i] = test_sizes[ rand() % test_sizes_size ];
+		memory[i] = allok(memory_sizes[i]);
+	}
 
-	
+	for(int i = 0; i < TEST_ALLOKS; i++)
+	{
+		freek(memory[i]);
+	}
 
-	free(memory);
+	return 0;
 }

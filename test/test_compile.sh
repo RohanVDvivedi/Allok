@@ -1,1 +1,1 @@
-gcc ./test.c -o test.out -lmemman -lcutlery
+gcc ./test.c -o test.out -lallok -lcutlery
