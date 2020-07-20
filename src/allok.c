@@ -27,7 +27,7 @@ int block_compare(const void* data1, const void* data2)
 		return 0;
 }
 
-#define MAX_BLOCK_SIZE (128)//(4096 * 2)
+#define MAX_BLOCK_SIZE (512)//(4096 * 2)
 #define MIN_BLOCK_SIZE (sizeof(block_header) + 8)
 
 #define MAX_PAYLOAD_SIZE MAX_BLOCK_SIZE - sizeof(block_header)
@@ -49,6 +49,7 @@ void init_block(void* block, size_t total_size)
 
 block_header* get_new_block()
 {
+	printf("Getting new block\n");
 	void* block = malloc(MAX_BLOCK_SIZE);
 	init_block(block, MAX_BLOCK_SIZE);
 	return block;
@@ -67,12 +68,13 @@ int is_free_block(block_header* blockH)
 // returns the other splitted block header, if splitted
 block_header* split(block_header* big_blockH, size_t required_payload_size)
 {
+	printf("block being splitted, has payload_size %lu + block base size %lu\n", big_blockH->payload_size, sizeof(block_header));
 	if(big_blockH->payload_size < required_payload_size + MIN_BLOCK_SIZE)
 		return NULL;
 
+	size_t new_block_size = big_blockH->payload_size - required_payload_size;
 	big_blockH->payload_size = required_payload_size;
 
-	size_t new_block_size = big_blockH->payload_size - required_payload_size;
 	block_header* new_block = (block_header*)(big_blockH->payload + big_blockH->payload_size);
 	init_block(new_block, new_block_size);
 
@@ -110,6 +112,8 @@ void* allok(size_t size)
 	block_header* blockH = (block_header*) find_succeeding_or_equals(&free_tree, &((block_header){.payload_size = size}));
 	if(blockH == NULL)
 		blockH = get_new_block();
+	else
+		remove_from_bst(&free_tree, blockH);
 
 	if(blockH->payload_size > size)
 	{
