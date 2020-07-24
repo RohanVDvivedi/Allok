@@ -2,7 +2,6 @@
 #define MEM_MAN_H
 
 #include<stdlib.h>
-#include<stddef.h>
 
 void allok_init();
 

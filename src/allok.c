@@ -1,5 +1,8 @@
 #include<allok.h>
 
+#include<sys/mman.h>
+
+#include<stddef.h>
 #include<bst.h>
 
 // binary search tree to link free nodes, so we can find best fit free nodes
@@ -27,6 +30,9 @@ int block_compare(const void* data1, const void* data2)
 		return 0;
 }
 
+// MAX_BLOCK_SIZE must be kept a multiple of page size of the OS
+// on linux this must be 4096
+
 #define MAX_BLOCK_SIZE (4096 * 4)
 #define MIN_BLOCK_SIZE (sizeof(block_header) + 8)
 
@@ -49,14 +55,14 @@ void init_block(void* block, size_t total_size)
 
 block_header* get_new_block()
 {
-	void* block = malloc(MAX_BLOCK_SIZE);
+	void* block = mmap(NULL, MAX_BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_SHARED | MAP_POPULATE, 0, 0);
 	init_block(block, MAX_BLOCK_SIZE);
 	return block;
 }
 
 void return_block_memory(block_header* blockH)
 {
-	free(blockH);
+	munmap(blockH, MAX_BLOCK_SIZE);
 }
 
 int is_free_block(block_header* blockH)
