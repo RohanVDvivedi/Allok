@@ -17,4 +17,4 @@ setup instructions
  * git clone https://github.com/RohanVDvivedi/Allok.git
  * cd Allok
  * sudo make clean install
- * add "-lallok" linker flag, while compiling your application
+ * add "-lallok -lcutlery" linker flag, while compiling your application
