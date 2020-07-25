@@ -20,7 +20,7 @@ BINARY:=${BIN_DIR}/allok.out
 # compiler flags
 CFLAGS=-Wall -O3 -I${INC_DIR}
 # linker flags, this will used to compile the binary
-LFLAGS=-lallok -lcutlery
+LFLAGS=-L${LIB_DIR} -lallok -lcutlery
 
 # rule to make the object directory
 ${OBJ_DIR} :
