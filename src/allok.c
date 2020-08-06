@@ -2,8 +2,12 @@
 
 #include<sys/mman.h>
 
+#include<string.h>
 #include<stddef.h>
+
 #include<bst.h>
+
+static int debug = 0;
 
 // binary search tree to link free nodes, so we can find best fit free nodes
 static bst free_tree;
@@ -39,8 +43,11 @@ int block_compare(const void* data1, const void* data2)
 #define MAX_PAYLOAD_SIZE MAX_BLOCK_SIZE - sizeof(block_header)
 #define MIN_PAYLOAD_SIZE MIN_BLOCK_SIZE - sizeof(block_header)
 
-void allok_init()
+void allok_init(int debugL)
 {
+	debug = debugL;
+	if(debug)
+		printf("sizeof Block Header : decimal : %lu, in hex : %lx\n\n", sizeof(block_header), sizeof(block_header));
 	initialize_bst(&free_tree, RED_BLACK_TREE, offsetof(block_header, free_node), block_compare);
 }
 
@@ -56,6 +63,8 @@ void init_block(void* block, size_t total_size)
 block_header* get_new_block()
 {
 	void* block = mmap(NULL, MAX_BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_SHARED | MAP_POPULATE, 0, 0);
+	if(debug)
+		printf("->-> New allocation of size : %u\n", MAX_BLOCK_SIZE);
 	init_block(block, MAX_BLOCK_SIZE);
 	return block;
 }
@@ -67,7 +76,7 @@ void return_block_memory(block_header* blockH)
 
 int is_free_block(block_header* blockH)
 {
-	return exists_in_bst(&free_tree, blockH);
+	return !is_new_bstnode(&free_tree, &(blockH->free_node));
 }
 
 // returns the other splitted block header, if splitted

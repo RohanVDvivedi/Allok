@@ -3,7 +3,7 @@
 
 #include<stdlib.h>
 
-void allok_init();
+void allok_init(int debugL);
 
 void* allok(size_t size);
 

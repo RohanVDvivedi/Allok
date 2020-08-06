@@ -3,7 +3,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-#define TEST_ALLOKS 175
+#define TEST_ALLOKS 197
 
 unsigned int test_sizes_size = 5;
 unsigned int test_sizes[] = {6, 16, 20, 35, 55};
@@ -14,7 +14,7 @@ void* memory[TEST_ALLOKS];
 int main()
 {
 	unsigned int total_allocation_size = 0;
-	allok_init();
+	allok_init(1);
 
 	for(unsigned int i = 0; i < TEST_ALLOKS; i++)
 	{
@@ -32,8 +32,9 @@ int main()
 
 	for(unsigned int i = 0; i < TEST_ALLOKS; i++)
 	{
-		printf("%d - Freeing memory for size %u at %p\n\n", i, memory_sizes[i], memory[i]);
+		printf("%d - Freeing memory for size %u at %p\n", i, memory_sizes[i], memory[i]);
 		freek(memory[i]);
+		printf("%d - Freed memory for size %u at %p\n\n", i, memory_sizes[i], memory[i]);
 	}
 
 	return 0;
