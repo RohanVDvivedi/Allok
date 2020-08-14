@@ -1,5 +1,7 @@
 #include<allok.h>
 
+#include<stdio.h>
+
 #include<sys/mman.h>
 
 #include<string.h>
