@@ -13,6 +13,8 @@ Note: the alocator is thread-unsafe, so use global locks in your application.
  * Use this allocator should be used for larger block sizes for better efficiency.
 
 ## Setup instructions
+**Install dependencies :**
+ * [Cutlery](https://github.com/RohanVDvivedi/Cutlery)
 
 **Download source code :**
  * `git clone https://github.com/RohanVDvivedi/Allok.git`
