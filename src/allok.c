@@ -82,7 +82,7 @@ static block_header* get_new_block()
 // returns 1, if a block is free
 static int is_free_block(const block_header* blockH)
 {
-	return is_new_bstnode(&free_tree, &(blockH->free_node)) && (free_tree.root != &(blockH->free_node));
+	return (!is_new_bstnode(&free_tree, &(blockH->free_node))) || (free_tree.root == &(blockH->free_node));
 }
 
 static void delete_used_block(block_header* blockH)
