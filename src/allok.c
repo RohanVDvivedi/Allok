@@ -182,6 +182,7 @@ void freek(void* mptr)
 
 		insert_in_bst(&free_tree, blockH);
 	}
-	else if(blockH->payload_size == MAX_PAYLOAD_SIZE)
+	
+	if(blockH->payload_size == MAX_PAYLOAD_SIZE)
 		delete_used_block(blockH);
 }
