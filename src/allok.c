@@ -270,7 +270,7 @@ static void debug_print_all_blocks()
 	if(!is_empty_linkedlist(&blocks_list))
 		for_each_in_linkedlist(&blocks_list, debug_print_block_wrapper, NULL);
 	else
-		printtf("\nNo pages in the Allok allocator\n\n");
+		printf("\nNo pages in the Allok allocator\n\n");
 }
 
 void debug_print_allok()
