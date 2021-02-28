@@ -30,6 +30,8 @@ int main()
 	allok_init();
 	printf("Mememory allocator initialized\n\n");
 
+	debug_print_allok();
+
 	for(unsigned int i = 0; i < TEST_ALLOKS; i++)
 	{
 		memory[i] = allok(memory_sizes[i]);

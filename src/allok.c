@@ -10,8 +10,6 @@
 #include<linkedlist.h>
 #include<bst.h>
 
-static int debug = 0;
-
 // doubly linked list to find next and previous memory blocks quickly
 static linkedlist blocks_list;
 
@@ -60,8 +58,6 @@ static void init_block(void* block, size_t total_size)
 static block_header* get_new_block()
 {
 	void* block = mmap(NULL, MAX_BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE | MAP_POPULATE, -1, 0);
-	if(debug)
-		printf("->-> New allocation of size : %u\n", MAX_BLOCK_SIZE);
 	init_block(block, MAX_BLOCK_SIZE);
 	insert_head(&blocks_list, block);
 	return block;
