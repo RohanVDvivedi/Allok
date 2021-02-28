@@ -250,14 +250,14 @@ static void debug_print_block(const block_header* blockH)
 	if(get_prev_block_of(blockH) == NULL)	// if first block in page
 		printf("\tSTART OF PAGE\n\n");
 
-	printf("\tBlock :\n");
-	printf("\t\tAddress : %p\n", blockH);
-	printf("\t\tIs free : %d\n", is_free_block(blockH));
-	printf("\t\tPayload : %p\n", blockH->payload);
-	printf("\t\tSize    : %lu  OR  0x%lx\n\n", blockH->payload_size, blockH->payload_size);
+	printf("\t\tBlock :\n");
+	printf("\t\t\tAddress : %p\n", blockH);
+	printf("\t\t\tIs free : %d\n", is_free_block(blockH));
+	printf("\t\t\tPayload : %p\n", blockH->payload);
+	printf("\t\t\tSize    : %lu  OR  0x%lx\n\n", blockH->payload_size, blockH->payload_size);
 
 	if(get_next_block_of(blockH) == NULL)	// if last block in page
-		printf("\t\t-- xx -- xx --\n\n");
+		printf("\t  -- xx -- xx --\n\n");
 }
 
 static void debug_print_block_wrapper(const void* blockH, const void* add_params_NULL)
