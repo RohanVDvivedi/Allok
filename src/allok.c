@@ -1,6 +1,7 @@
 #include<allok.h>
 
 #include<stdio.h>
+#include<stdint.h>
 
 #include<sys/mman.h>
 
@@ -39,11 +40,14 @@ int block_compare(const void* data1, const void* data2)
 // MAX_BLOCK_SIZE must be kept a multiple of page size of the OS
 // on linux this must be 4096
 
-#define MAX_BLOCK_SIZE (4096 * 4)
-#define MIN_BLOCK_SIZE (sizeof(block_header) + 8)
+#define PAGE_SIZE          (4096 *  4)
+#define PAGE_ALIGN         (PAGE_SIZE)
 
-#define MAX_PAYLOAD_SIZE MAX_BLOCK_SIZE - sizeof(block_header)
-#define MIN_PAYLOAD_SIZE MIN_BLOCK_SIZE - sizeof(block_header)
+#define MAX_BLOCK_SIZE     (PAGE_SIZE)
+#define MIN_BLOCK_SIZE     (sizeof(block_header) + 8)
+
+#define MAX_PAYLOAD_SIZE   (MAX_BLOCK_SIZE - sizeof(block_header))
+#define MIN_PAYLOAD_SIZE   (MIN_BLOCK_SIZE - sizeof(block_header))
 
 // the total_size here includes the size of the block_header struct and the payload size
 // i.e. total_size = sizeof(block_header) + payload_size;
@@ -57,8 +61,8 @@ static void init_block(void* block, size_t total_size)
 
 static block_header* get_new_block()
 {
-	void* block = mmap(NULL, MAX_BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE | MAP_POPULATE, -1, 0);
-	init_block(block, MAX_BLOCK_SIZE);
+	void* block = mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE | MAP_POPULATE, -1, 0);
+	init_block(block, PAGE_SIZE);
 	insert_head(&blocks_list, block);
 	return block;
 }
@@ -68,29 +72,24 @@ static size_t get_total_block_size(const block_header* blockH)
 	return sizeof(block_header) + blockH->payload_size;
 }
 
-// returns 1 if blockH1 and blockH2 are physically adjacent to each other
-static int are_adjacent_blocks(const block_header* blockH1, const block_header* blockH2)
+static int is_first_block_of_the_page(const block_header* blockH)
 {
-	// same blocks (both the pointers point to same memory block)
-	if(blockH1 == blockH2)
-		return 0;
-
-	// conditions to meet for block ordering ::  blockH1 then blockH2
-	if( (get_next_of(&blocks_list, blockH1) == blockH2) &&
-		((((void*)blockH1) + get_total_block_size(blockH1)) == ((void*)blockH2)) )
-		return 1;
-
-	// conditions to meet for block ordering ::  blockH2 then blockH1
-	if( (get_prev_of(&blocks_list, blockH1) == blockH2) &&
-		((((void*)blockH2) + get_total_block_size(blockH2)) == ((void*)blockH1)) )
-		return 1;
-
-	// not adjacent blocks
-	return 0;
+	return (((uintptr_t)blockH) % PAGE_ALIGN) == 0;
 }
 
-static const block_header* get_next_block_of(const block_header* blockH)
+static int is_last_block_of_the_page(const block_header* blockH)
 {
+	const void* end_of_block = ((const void*)blockH) + get_total_block_size(blockH);
+	return (((uintptr_t)end_of_block) % PAGE_ALIGN) == 0;
+}
+
+static const block_header* get_next_adjacent_block_of(const block_header* blockH)
+{
+	// if this block is the last block on the page
+	// then, it can not have a next adjacent block
+	if(is_last_block_of_the_page(blockH))
+		return NULL;
+
 	// find the next block in list
 	const block_header* next_blockH = get_next_of(&blocks_list, blockH);
 
@@ -100,8 +99,13 @@ static const block_header* get_next_block_of(const block_header* blockH)
 	return NULL;
 }
 
-static const block_header* get_prev_block_of(const block_header* blockH)
+static const block_header* get_previous_adjacent_block_of(const block_header* blockH)
 {
+	// if this block is the first block on the page
+	// then, it can not have a previous adjacent block
+	if(is_first_block_of_the_page(blockH))
+		return NULL;
+
 	// find the previous block in list
 	const block_header* prev_blockH = get_prev_of(&blocks_list, blockH);
 
@@ -114,7 +118,7 @@ static const block_header* get_prev_block_of(const block_header* blockH)
 static void delete_used_block(block_header* blockH)
 {
 	remove_from_linkedlist(&blocks_list, blockH);
-	munmap(blockH, MAX_BLOCK_SIZE);
+	munmap(blockH, PAGE_SIZE);
 }
 
 // returns the other splitted block header, if splitted
@@ -142,15 +146,10 @@ static block_header* split(block_header* big_blockH, size_t required_payload_siz
 // merges blockH and its blockH->next header if it is not NULL
 static int merge(block_header* blockH)
 {
-	// find the next block of the blockH,
+	// find the next adjacent block of the blockH,
 	// fail the merge operation with a return 0 if it does not exist
-	const block_header* next_blockH = get_next_block_of(blockH);
+	const block_header* next_blockH = get_next_adjacent_block_of(blockH);
 	if(next_blockH == NULL)
-		return 0;
-
-	// can not merge anything to the block of Allok's page sized memory block
-	if( ( blockH->payload_size      == MAX_PAYLOAD_SIZE ) || 
-		( next_blockH->payload_size == MAX_PAYLOAD_SIZE ) )
 		return 0;
 
 	// add total block size of the next block to the blockH's payload_size
@@ -215,12 +214,12 @@ void freek(void* mptr)
 	// blockH must hold the address of the largest block formed after merging
 	{
 		// try to merge blockH with its next adjacent block
-		block_header* next_block = (block_header*) get_next_block_of(blockH);
+		block_header* next_block = (block_header*) get_next_adjacent_block_of(blockH);
 		if(next_block != NULL && is_free_block(next_block) && merge(blockH))
 			remove_from_bst(&free_tree, next_block);
 
 		// try to merge blockH with its previous adjacent block
-		block_header* prev_block = (block_header*) get_prev_block_of(blockH);
+		block_header* prev_block = (block_header*) get_previous_adjacent_block_of(blockH);
 		if(prev_block != NULL && is_free_block(prev_block) && merge(prev_block))
 		{
 			remove_from_bst(&free_tree, prev_block);
@@ -243,7 +242,7 @@ void freek(void* mptr)
 
 static void debug_print_block(const block_header* blockH)
 {
-	if(get_prev_block_of(blockH) == NULL)	// if first block in page
+	if(is_first_block_of_the_page(blockH))
 		printf("\tSTART OF PAGE\n\n");
 
 	printf("\t\tBlock :\n");
@@ -252,7 +251,7 @@ static void debug_print_block(const block_header* blockH)
 	printf("\t\t\tPayload : %p\n", blockH->payload);
 	printf("\t\t\tSize    : %lu  OR  0x%lx\n\n", blockH->payload_size, blockH->payload_size);
 
-	if(get_next_block_of(blockH) == NULL)	// if last block in page
+	if(is_last_block_of_the_page(blockH))
 		printf("\t  -- xx -- xx --\n\n");
 }
 
@@ -261,16 +260,11 @@ static void debug_print_block_wrapper(const void* blockH, const void* add_params
 	debug_print_block(blockH);
 }
 
-static void debug_print_all_blocks()
+void debug_print_allok()
 {
+	printf("Block Header size : %lu OR 0x%lx\n\n", sizeof(block_header), sizeof(block_header));
 	if(!is_empty_linkedlist(&blocks_list))
 		for_each_in_linkedlist(&blocks_list, debug_print_block_wrapper, NULL);
 	else
 		printf("\nNo pages in the Allok allocator\n\n");
-}
-
-void debug_print_allok()
-{
-	printf("Block Header size : %lu OR 0x%lx\n\n", sizeof(block_header), sizeof(block_header));
-	debug_print_all_blocks();
 }
