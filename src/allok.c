@@ -1,6 +1,7 @@
 #include<allok.h>
 
 #include<stdio.h>
+#include<stdlib.h>
 #include<stdint.h>
 
 #include<sys/mman.h>
@@ -61,7 +62,7 @@ static void init_block(void* block, size_t total_size)
 
 static block_header* get_new_block()
 {
-	void* block = mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE | MAP_POPULATE, -1, 0);
+	void* block = aligned_alloc(PAGE_ALIGN, PAGE_SIZE);
 	init_block(block, PAGE_SIZE);
 	insert_head(&blocks_list, block);
 	return block;
@@ -118,7 +119,7 @@ static const block_header* get_previous_adjacent_block_of(const block_header* bl
 static void delete_used_block(block_header* blockH)
 {
 	remove_from_linkedlist(&blocks_list, blockH);
-	munmap(blockH, PAGE_SIZE);
+	free(blockH);
 }
 
 // returns the other splitted block header, if splitted
