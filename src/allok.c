@@ -84,12 +84,12 @@ static int are_adjacent_blocks(const block_header* blockH1, const block_header* 
 		return 0;
 
 	// conditions to meet for block ordering ::  blockH1 then blockH2
-	if( (get_next_of(blockH1) == blockH2) &&
+	if( (get_next_of(&blocks_list, blockH1) == blockH2) &&
 		((blockH1->payload + blockH1->payload_size) == ((void*)blockH2)) )
 		return 1;
 
 	// conditions to meet for block ordering ::  blockH2 then blockH1
-	if( (get_prev_of(blockH1) == blockH2) &&
+	if( (get_prev_of(&blocks_list, blockH1) == blockH2) &&
 		(((void*)blockH1) == (blockH2->payload + blockH2->payload_size)) )
 		return 1;
 
@@ -100,7 +100,7 @@ static int are_adjacent_blocks(const block_header* blockH1, const block_header* 
 static const block_header* get_next_block_of(const block_header* blockH)
 {
 	// find the next block in list
-	const block_header* next_blockH = get_next_of(blockH);
+	const block_header* next_blockH = get_next_of(&blocks_list, blockH);
 
 	// check if this block is physically after blockH
 	if( (blockH->payload + blockH->payload_size) == ((void*)next_blockH) )
@@ -111,7 +111,7 @@ static const block_header* get_next_block_of(const block_header* blockH)
 static const block_header* get_prev_block_of(const block_header* blockH)
 {
 	// find the previous block in list
-	const block_header* prev_blockH = get_prev_of(blockH);
+	const block_header* prev_blockH = get_prev_of(&blocks_list, blockH);
 
 	// check if this block is physically before blockH
 	if( (prev_blockH->payload + prev_blockH->payload_size) == ((void*)blockH) )
@@ -131,7 +131,7 @@ static block_header* split(block_header* big_blockH, size_t required_payload_siz
 	if(big_blockH->payload_size < required_payload_size + MIN_BLOCK_SIZE)
 		return NULL;
 
-	// total_size of the new block that will be formed
+	// total_size of the new block that will be formed after the split
 	size_t new_block_total_size = big_blockH->payload_size - required_payload_size;
 
 	// update the payload size of the big_blockH which is now, not so big after all
