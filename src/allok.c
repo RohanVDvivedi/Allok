@@ -50,15 +50,6 @@ int block_compare(const void* data1, const void* data2)
 #define MAX_PAYLOAD_SIZE MAX_BLOCK_SIZE - sizeof(block_header)
 #define MIN_PAYLOAD_SIZE MIN_BLOCK_SIZE - sizeof(block_header)
 
-void allok_init(int debugL)
-{
-	debug = debugL;
-	if(debug)
-		printf("sizeof Block Header : decimal : %lu, in hex : %lx\n\n", sizeof(block_header), sizeof(block_header));
-	initialize_linkedlist(&blocks_list, offsetof(block_header, blocks_node));
-	initialize_bst(&free_tree, RED_BLACK_TREE, offsetof(block_header, free_node), block_compare);
-}
-
 // the total_size here includes the size of the block_header struct and the payload size
 // i.e. total_size = sizeof(block_header) + payload_size;
 static void init_block(void* block, size_t total_size)
@@ -177,6 +168,15 @@ static int merge(block_header* blockH)
 	remove_from_linkedlist(&blocks_list, next_block);
 
 	return 1;
+}
+
+void allok_init(int debugL)
+{
+	debug = debugL;
+	if(debug)
+		printf("sizeof Block Header : decimal : %lu, in hex : %lx\n\n", sizeof(block_header), sizeof(block_header));
+	initialize_linkedlist(&blocks_list, offsetof(block_header, blocks_node));
+	initialize_bst(&free_tree, RED_BLACK_TREE, offsetof(block_header, free_node), block_compare);
 }
 
 void* allok(size_t size)
