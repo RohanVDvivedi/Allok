@@ -10,7 +10,7 @@ Note: the alocator is thread-unsafe, so use global locks in your application.
 	  * total memory used by the allocator for memory management = 56 * 175 bytes ==> 9800 bytes
 	  * 32.128 % efficiency in memory usage
  * The memory allocator is not very efficient with smaller memory allocations like 6 - 24 bytes, because each allocated block will use up 56 bytes for its own management internally to the allocator.
- * Use this allocator should be used for larger block sizes for better efficiency.
+ * This allocator should be used for allocating larger block sizes for better memory usage efficiency, which is gauranteed because of O(log(n)) best fit algorithm.
 
 ## Setup instructions
 **Install dependencies :**
