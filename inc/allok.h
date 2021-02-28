@@ -4,7 +4,7 @@
 #include<stdlib.h>
 
 // this should be the first line of your main function for using this allocator
-void allok_init(int debugL);
+void allok_init();
 
 // allocates memory of given size and returns the pointer pointing to it
 void* allok(size_t size);
@@ -21,5 +21,7 @@ void freek(void* mptr);
 
 		freek(mptr);
 */
+
+void debug_print_allok();
 
 #endif

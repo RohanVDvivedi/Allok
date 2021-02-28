@@ -177,9 +177,6 @@ static int is_free_block(const block_header* blockH)
 
 void allok_init(int debugL)
 {
-	debug = debugL;
-	if(debug)
-		printf("sizeof Block Header : decimal : %lu, in hex : %lx\n\n", sizeof(block_header), sizeof(block_header));
 	initialize_linkedlist(&blocks_list, offsetof(block_header, blocks_node));
 	initialize_bst(&free_tree, RED_BLACK_TREE, offsetof(block_header, free_node), block_compare);
 }
@@ -239,4 +236,42 @@ void freek(void* mptr)
 		delete_used_block(blockH);
 	else
 		insert_in_bst(&free_tree, blockH);
+}
+
+
+/*
+**
+**	DEBUG PRINT FUNCTIONS
+**
+*/
+
+static void debug_print_block(const block_header* blockH)
+{
+	if(get_prev_block_of(blockH) == NULL)	// if first block in page
+		printf("\tSTART OF PAGE\n\n");
+
+	printf("\tBlock :\n");
+	printf("\t\tAddress : %p\n", blockH);
+	printf("\t\tIs free : %d\n", is_free_block(blockH));
+	printf("\t\tPayload : %p\n", blockH->payload);
+	printf("\t\tSize    : %lu  OR  0x%lx\n\n", blockH->payload_size, blockH->payload_size);
+
+	if(get_next_block_of(blockH) == NULL)	// if last block in page
+		printf("\t\t-- xx -- xx --\n\n");
+}
+
+static void debug_print_block_wrapper(const void* blockH, const void* add_params_NULL)
+{
+	debug_print_block(blockH);
+}
+
+static void debug_print_all_blocks()
+{
+	for_each_in_linkedlist(&blocks_list, debug_print_block_wrapper, NULL);
+}
+
+void debug_print_allok()
+{
+	printf("Block Header size : %lu OR 0x%lx\n\n", sizeof(block_header), sizeof(block_header));
+	debug_print_all_blocks();
 }
