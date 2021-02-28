@@ -85,6 +85,49 @@ static int is_free_block(const block_header* blockH)
 	return (!is_new_bstnode(&free_tree, &(blockH->free_node))) || (free_tree.root == &(blockH->free_node));
 }
 
+// returns 1 if blockH1 and blockH2 are physically adjacent to each other
+static int are_adjacent_blocks(const block_header* blockH1, const block_header* blockH2)
+{
+	// same blocks (both the pointers point to same memory block)
+	if(blockH1 == blockH2)
+		return 0;
+
+	// conditions to meet for block ordering ::  blockH1 then blockH2
+	if( (get_next_of(blockH1) == blockH2) &&
+		((blockH1->payload + blockH1->payload_size) == ((void*)blockH2)) )
+		return 1;
+
+	// conditions to meet for block ordering ::  blockH2 then blockH1
+	if( (get_prev_of(blockH1) == blockH2) &&
+		(((void*)blockH1) == (blockH2->payload + blockH2->payload_size)) )
+		return 1;
+
+	// not adjacent blocks
+	return 0;
+}
+
+static const block_header* get_next_block_of(const block_header* blockH)
+{
+	// find the next block in list
+	const block_header* next_blockH = get_next_of(blockH);
+
+	// check if this block is physically after blockH
+	if( (blockH->payload + blockH->payload_size) == ((void*)next_blockH) )
+		return next_blockH;
+	return NULL;
+}
+
+static const block_header* get_prev_block_of(const block_header* blockH)
+{
+	// find the previous block in list
+	const block_header* prev_blockH = get_prev_of(blockH);
+
+	// check if this block is physically before blockH
+	if( (prev_blockH->payload + prev_blockH->payload_size) == ((void*)blockH) )
+		return prev_blockH;
+	return NULL;
+}
+
 static void delete_used_block(block_header* blockH)
 {
 	remove_from_linkedlist(&blocks_list, blockH);
