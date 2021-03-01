@@ -73,6 +73,13 @@ static size_t get_total_block_size(const block_header* blockH)
 	return sizeof(block_header) + blockH->payload_size;
 }
 
+static void* get_end_of_block_address(const block_header* blockH)
+{
+	return (void*)(blockH->payload + blockH->payload_size);
+	// OR
+	// return (void*)(((char*)blockH) + get_total_block_size(blockH));
+}
+
 static int is_first_block_of_the_page(const block_header* blockH)
 {
 	return (((uintptr_t)blockH) % PAGE_ALIGN) == 0;
@@ -80,8 +87,7 @@ static int is_first_block_of_the_page(const block_header* blockH)
 
 static int is_last_block_of_the_page(const block_header* blockH)
 {
-	const void* end_of_block = ((const void*)blockH) + get_total_block_size(blockH);
-	return (((uintptr_t)end_of_block) % PAGE_ALIGN) == 0;
+	return (((uintptr_t)get_end_of_block_address(blockH)) % PAGE_ALIGN) == 0;
 }
 
 static const block_header* get_next_adjacent_block_of(const block_header* blockH)
@@ -95,7 +101,7 @@ static const block_header* get_next_adjacent_block_of(const block_header* blockH
 	const block_header* next_blockH = get_next_of(&blocks_list, blockH);
 
 	// check if this block is physically after blockH
-	if((((void*)blockH) + get_total_block_size(blockH)) == ((void*)next_blockH))
+	if(get_end_of_block_address(blockH) == next_blockH)
 		return next_blockH;
 	return NULL;
 }
@@ -111,7 +117,7 @@ static const block_header* get_previous_adjacent_block_of(const block_header* bl
 	const block_header* prev_blockH = get_prev_of(&blocks_list, blockH);
 
 	// check if this block is physically before blockH
-	if((((void*)prev_blockH) + get_total_block_size(prev_blockH)) == ((void*)blockH))
+	if(get_end_of_block_address(prev_blockH) == blockH)
 		return prev_blockH;
 	return NULL;
 }
