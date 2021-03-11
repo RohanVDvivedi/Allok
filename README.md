@@ -1,7 +1,7 @@
 # Allok
 Binary Search Tree based generic memory allocator replacement for malloc, log(n) best fit algorithm for high memory utilization and speed, but has high memory overhead than stdlib malloc.
 
-Note: the alocator is thread-unsafe, so use global locks in your application.
+Note: the alocator is thread-unsafe, so use global locks in your application, while you allocate and free memory using this allocator.
 
  * Note: The allocator uses a lot of memory for management. Just for the idea see the analysis below:
 	* After running the test case on my machine with allocation sample sizes {6, 16, 20, 35, 55}.
