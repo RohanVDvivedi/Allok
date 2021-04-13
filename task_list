@@ -5,7 +5,3 @@
  * make Allok thread safe using a single global lock
 
  * enable allok_init() function to set a the page size of the allocator (<4096 result in 8KB pages) and ensure that it is always a multiple of 4096.
-
- * create a malloc shim for the library, to use it with regular programs.
-
- * modify test cases to run in multiple runs to visualize allocation (merges and splits) using debug statments, to increase test coverage
