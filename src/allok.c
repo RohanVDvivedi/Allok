@@ -64,7 +64,7 @@ static block_header* get_new_block()
 {
 	void* block = aligned_alloc(PAGE_ALIGN, PAGE_SIZE);
 	init_block(block, PAGE_SIZE);
-	insert_head(&blocks_list, block);
+	insert_head_in_linkedlist(&blocks_list, block);
 	return block;
 }
 
@@ -98,7 +98,7 @@ static const block_header* get_next_adjacent_block_of(const block_header* blockH
 		return NULL;
 
 	// find the next block in list
-	const block_header* next_blockH = get_next_of(&blocks_list, blockH);
+	const block_header* next_blockH = get_next_of_in_linkedlist(&blocks_list, blockH);
 
 	// check if this block is physically after blockH
 	if(get_end_of_block_address(blockH) == next_blockH)
@@ -114,7 +114,7 @@ static const block_header* get_previous_adjacent_block_of(const block_header* bl
 		return NULL;
 
 	// find the previous block in list
-	const block_header* prev_blockH = get_prev_of(&blocks_list, blockH);
+	const block_header* prev_blockH = get_prev_of_in_linkedlist(&blocks_list, blockH);
 
 	// check if this block is physically before blockH
 	if(get_end_of_block_address(prev_blockH) == blockH)
@@ -145,7 +145,7 @@ static block_header* split(block_header* big_blockH, size_t required_payload_siz
 	init_block(new_blockH, new_block_total_size);
 
 	// insert the new block in the blocks_list after the big_blockH
-	insert_after(&blocks_list, big_blockH, new_blockH);
+	insert_after_in_linkedlist(&blocks_list, big_blockH, new_blockH);
 
 	return new_blockH;
 }
