@@ -191,7 +191,7 @@ void* allok(size_t size)
 	if(size > MAX_PAYLOAD_SIZE)
 		return NULL;
 
-	block_header* blockH = (block_header*) find_succeeding_or_equals(&free_tree, &((block_header){.payload_size = size}));
+	block_header* blockH = (block_header*) find_succeeding_or_equals_in_bst(&free_tree, &((block_header){.payload_size = size}));
 	if(blockH == NULL)
 		blockH = get_new_block();
 	else
