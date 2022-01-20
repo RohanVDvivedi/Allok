@@ -180,7 +180,7 @@ static int is_free_block(const block_header* blockH)
 void allok_init(int debugL)
 {
 	initialize_linkedlist(&blocks_list, offsetof(block_header, blocks_node));
-	initialize_bst(&free_tree, RED_BLACK_TREE, offsetof(block_header, free_node), block_compare);
+	initialize_bst(&free_tree, RED_BLACK_TREE, block_compare, offsetof(block_header, free_node));
 }
 
 void* allok(size_t size)
