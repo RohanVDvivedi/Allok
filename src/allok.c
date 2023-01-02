@@ -176,7 +176,7 @@ static int is_free_block(const block_header* blockH)
 {
 	// we use internals of bst data structure of cutlery
 	// to check if the blockH is already in free_tree
-	return (!(blockH->free_node.parent == NULL && blockH->free_node.left == NULL && blockH->free_node.right == NULL)) || (free_tree.root == &(blockH->free_node));
+	return !is_free_floating_bstnode(&(blockH->free_node));
 }
 
 void allok_init(int debugL)
