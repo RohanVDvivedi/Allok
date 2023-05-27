@@ -38,9 +38,6 @@ int block_compare(const void* data1, const void* data2)
 		return 0;
 }
 
-// MAX_BLOCK_SIZE must be kept a multiple of page size of the OS
-// on linux this must be 4096
-
 #define PAGE_SIZE          (4096 *  4)
 #define PAGE_ALIGN         (PAGE_SIZE)
 
