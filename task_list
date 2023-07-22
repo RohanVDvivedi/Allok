@@ -5,3 +5,5 @@
  * make Allok thread safe using a single global lock
 
  * enable allok_init() function to set a the page size of the allocator (<4096 result in 8KB pages) and ensure that it is always a multiple of 4096.
+
+ * handle case when underlying allocator fails
