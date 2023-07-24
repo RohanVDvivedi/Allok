@@ -3,6 +3,8 @@ Binary Search Tree based generic memory allocator replacement for malloc, log(n)
 
 Note: the alocator is thread-unsafe, so use global locks in your application, while you allocate and free memory using this allocator.
 
+Note: This allocator does not gaurantee/satisfy any alignment requirements, hence do not use it on machines with alignments constraints (like ARM or similar RISC machines).
+
  * Note: The allocator uses a lot of memory for management. Just for the idea see the analysis below:
 	* After running the test case on my machine with allocation sample sizes {6, 16, 20, 35, 55}.
 	  * total usable memory (acquired over 197 allocations) = 5264 bytes
