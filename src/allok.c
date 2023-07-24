@@ -60,6 +60,8 @@ static void init_block(void* block, size_t total_size)
 static block_header* get_new_block()
 {
 	void* block = aligned_alloc(PAGE_ALIGN, PAGE_SIZE);
+	if(block == NULL)
+		return NULL;
 	init_block(block, PAGE_SIZE);
 	insert_head_in_linkedlist(&blocks_list, block);
 	return block;
@@ -176,7 +178,7 @@ static int is_free_block(const block_header* blockH)
 	return !is_free_floating_bstnode(&(blockH->free_node));
 }
 
-void allok_init(int debugL)
+void allok_init()
 {
 	initialize_linkedlist(&blocks_list, offsetof(block_header, blocks_node));
 	initialize_bst(&free_tree, RED_BLACK_TREE, block_compare, offsetof(block_header, free_node));
@@ -192,7 +194,11 @@ void* allok(size_t size)
 
 	block_header* blockH = (block_header*) find_succeeding_or_equals_in_bst(&free_tree, &((block_header){.payload_size = size}));
 	if(blockH == NULL)
+	{
 		blockH = get_new_block();
+		if(blockH == NULL) // failure to allocate new block from the underlying allocator, can not make further allocations
+			return NULL;
+	}
 	else
 		remove_from_bst(&free_tree, blockH);
 
