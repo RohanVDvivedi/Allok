@@ -1,4 +1,4 @@
-#include<allok.h>
+#include<allok/allok.h>
 
 #include<stdio.h>
 #include<stdlib.h>

@@ -34,7 +34,7 @@ If you are in-search for an alignment aware best-fit (log(n) search) allocator f
 ## Using The library
  * add `-lallok -lcutlery` linker flag, while compiling your application
  * do not forget to include appropriate public api headers as and when needed. this includes
-   * `#include<allok.h>`
+   * `#include<allok/allok.h>`
 
 ## Instructions for uninstalling library
 

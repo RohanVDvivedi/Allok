@@ -1,4 +1,4 @@
-#include<allok.h>
+#include<allok/allok.h>
 
 #include<stdio.h>
 #include<stdlib.h>
@@ -9,8 +9,8 @@
 #include<string.h>
 #include<stddef.h>
 
-#include<linkedlist.h>
-#include<bst.h>
+#include<cutlery/linkedlist.h>
+#include<cutlery/bst.h>
 
 // doubly linked list to find next and previous memory blocks quickly
 static linkedlist blocks_list;
