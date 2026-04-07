@@ -100,7 +100,7 @@ static const block_header* get_next_adjacent_block_of(const block_header* blockH
 	const block_header* next_blockH = get_next_of_in_linkedlist(&blocks_list, blockH);
 
 	// check if this block is physically after blockH
-	if(get_end_of_block_address(blockH) == next_blockH)
+	if(next_blockH != NULL && get_end_of_block_address(blockH) == next_blockH)
 		return next_blockH;
 	return NULL;
 }
@@ -116,7 +116,7 @@ static const block_header* get_previous_adjacent_block_of(const block_header* bl
 	const block_header* prev_blockH = get_prev_of_in_linkedlist(&blocks_list, blockH);
 
 	// check if this block is physically before blockH
-	if(get_end_of_block_address(prev_blockH) == blockH)
+	if(prev_blockH != NULL && get_end_of_block_address(prev_blockH) == blockH)
 		return prev_blockH;
 	return NULL;
 }
